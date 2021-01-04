@@ -1,0 +1,657 @@
+openapi: 3.0.1
+info:
+  title: Fee Service - API Definition
+  description: Fee Service - API Description (CONFIDENTIAL - INTERNAL USE ONLY)
+  termsOfService: https://www.tasgroup.eu/
+  contact:
+    email: info@tasgroup.eu
+  license:
+    name: ©2020 - TAS Group - All rights reserved
+    url: https://www.tasgroup.eu/
+  version: 0.0.1-SNAPSHOT
+servers:
+- url: /fees
+paths:
+  /feeSets:
+    get:
+      tags:
+      - Administration
+      summary: Returns a list of FeeSet resources, given the selection in the query
+        string
+      operationId: getFeeSets
+      parameters:
+      - name: name
+        in: query
+        description: The the Name of the FeeSet
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: convention
+        in: query
+        description: The Convention of the FeeSet
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: page
+        in: query
+        description: the page number or results
+        allowEmptyValue: false
+        schema:
+          type: integer
+          format: int32
+          default: 1
+      - name: pageSize
+        in: query
+        description: the page size or results
+        allowEmptyValue: false
+        schema:
+          type: integer
+          format: int32
+      responses:
+        200:
+          description: A paged list of FeeSet
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PagedFeeSets'
+        400:
+          description: Client request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: The user does not have the necessary permissions
+          content: {}
+        404:
+          description: The specified resource was not found
+          content: {}
+      deprecated: false
+    post:
+      tags:
+      - Administration
+      summary: Creates a new FeeSet.
+      operationId: addFeeSet
+      requestBody:
+        description: The updated FeeSet information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeeSet'
+        required: true
+      responses:
+        200:
+          description: A Subject resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeSet'
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Client request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: The user does not have the necessary permissions
+          content: {}
+        404:
+          description: The specified resource was not found
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: feeSet
+  /feeSets/{feeSetId}:
+    get:
+      tags:
+      - Administration
+      summary: Answers a resource representing the specified FeeSet
+      operationId: getFeeSet
+      parameters:
+      - name: feeSetId
+        in: path
+        description: The id of the FeeSet to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: A FeeSet resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeSet'
+        400:
+          description: Client request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: The user does not have the necessary permissions
+          content: {}
+        404:
+          description: The specified resource was not found
+          content: {}
+      deprecated: false
+    put:
+      tags:
+      - Administration
+      summary: Updates information of the specified Subject. Not yet implemented
+      operationId: updateSubject
+      parameters:
+      - name: feeSetId
+        in: path
+        description: The id of the FeeSet to retrieve
+        required: true
+        schema:
+          type: string
+      requestBody:
+        description: The updated FeeSet information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FeeSet'
+        required: true
+      responses:
+        200:
+          description: A FeeSet resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeSet'
+        201:
+          description: Created
+          content: {}
+        400:
+          description: Client request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: The user does not have the necessary permissions
+          content: {}
+        404:
+          description: The specified resource was not found
+          content: {}
+      deprecated: false
+      x-codegen-request-body-name: subject
+    delete:
+      tags:
+      - Administration
+      summary: Deletes a resource representing the specified FeeSet
+      operationId: deleteFeeSet
+      parameters:
+      - name: feeSetId
+        in: path
+        description: The id of the FeeSet to retrieve
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: The FeeSet resource deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeSet'
+        400:
+          description: Client request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: The user does not have the necessary permissions
+          content: {}
+        404:
+          description: The specified resource was not found
+          content: {}
+    
+  /findFee:
+    get:
+      tags:
+      - BackApplication
+      summary: Returns a Fee resource, given the selection in the query string
+      operationId: getFee
+      parameters:
+      - name: name
+        in: query
+        description: The the Name of the FeeSet
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: convention
+        in: query
+        description: The Convention of the FeeSet
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: operation
+        in: query
+        description: the operation of the Fee
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: reference
+        in: query
+        description: the reference of the Contract (Card, Account, ...)
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: amount
+        in: query
+        description: the amount of the operation if present
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: mcc
+        in: query
+        description: the mcc of the operation if present
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: channel
+        in: query
+        description: the channel from which of the operation is executed
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: country
+        in: query
+        description: the country from which of the operation is executed
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: circuit
+        in: query
+        description: the circuit (VISA, MC, ...) of the operation if present
+        allowEmptyValue: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: The selected Fee. In case of multiple result will be returned
+            the mosto convenient for customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeResult'
+        400:
+          description: Client request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: The user does not have the necessary permissions
+          content: {}
+        404:
+          description: The specified resource was not found
+          content: {}
+      deprecated: false
+  /findPeriodicFee:
+    get:
+      tags:
+      - BackApplication
+      summary: Returns a Periodic Fee resource, given the selection in the query string
+      operationId: getPeriodicFee
+      parameters:
+      - name: name
+        in: query
+        description: The the Name of the FeeSet
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: convention
+        in: query
+        description: The Convention of the FeeSet
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: operation
+        in: query
+        description: the operation of the Fee
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: reference
+        in: query
+        description: the reference of the Contract (Card, Account, ...)
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: issueDate
+        in: query
+        description: the issueDate of the referenced Contract
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: lastAppliedDate
+        in: query
+        description: the date in which was applied a fee of the referenced Contract
+        required: true
+        allowEmptyValue: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: The selected Fee. In case of multiple result will be returned
+            the mosto convenient for customer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeResult'
+        400:
+          description: Client request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: The user does not have the necessary permissions
+          content: {}
+        404:
+          description: The specified resource was not found
+          content: {}
+      deprecated: false
+  /confirmOperation:
+    post:
+      tags:
+      - BackApplication
+      summary: Confirm An operation described in parameters to mange internal counters
+      operationId: confirmFee
+      parameters:
+      - name: operation
+        in: query
+        description: the operation of the Fee
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: reference
+        in: query
+        description: the reference of the Contract (Card, Account, ...)
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: amount
+        in: query
+        description: the amount of the operation if present
+        allowEmptyValue: false
+        schema:
+          type: string
+      - name: mcc
+        in: query
+        description: the mcc of the operation if present
+        allowEmptyValue: false
+        schema:
+          type: string
+      responses:
+        200:
+          description: To confirm the operation is succeded
+          content: {}
+        400:
+          description: Client request error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        401:
+          description: Unauthorized
+          content: {}
+        403:
+          description: The user does not have the necessary permissions
+          content: {}
+        404:
+          description: The specified resource was not found
+          content: {}
+      deprecated: false
+components:
+  schemas:
+    Error:
+      title: Error
+      required:
+      - error
+      type: object
+      properties:
+        code:
+          type: string
+          example: E002
+        details:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorDetails'
+        error:
+          type: string
+          example: Invalid status
+      description: describes a generic error with a code and a details message
+    ErrorDetails:
+      title: ErrorDetails
+      type: object
+      properties:
+        message:
+          type: string
+        property:
+          type: string
+    PagedFeeSets:
+      title: PagedSubjects
+      type: object
+      properties:
+        page:
+          type: number
+        pageSize:
+          type: number
+        subjects:
+          type: array
+          items:
+            $ref: '#/components/schemas/FeeSet'
+        total:
+          type: number
+    FeeSet:
+      title: FeeSet
+      type: object
+      properties:
+        name:
+          type: string
+          example: Prod001
+        conventionName:
+          type: string
+          example: Convertion1
+        status:
+          type: string
+          example: ACTIVE
+        startDate:
+          type: string
+          example: 27-05-1970
+        endDate:
+          type: string
+          example: 27-05-1970
+        version:
+          type: string
+          example: v.01.01.01
+        fees:
+          type: array
+          items:
+            $ref: '#/components/schemas/Fee'
+        id:
+          type: string
+          example: "47458438"
+      description: Provides informations for a subject
+    Fee:
+      title: Fee
+      description: Provides informations for a Fee
+      type: object
+      properties:
+        operation:
+          type: string
+          example: TopUp
+        value:
+          type: string
+          example: "1.01"
+        type:
+          type: string
+          description: The currency or %
+          example: EUR
+        maxValue:
+          type: string
+          example: "1.01"
+          description: The max value that can be applied
+        minValue:
+          type: string
+          example: "1.01"
+          description: The min value that can be applied
+        onBalanceExcess:
+          type: string
+          example: "STORE"
+          description: 'Admissible values are: APPLY, SKIP, PARTIAL,STORE'
+        matchingRules:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/WithCounterValue'
+              - $ref: '#/components/schemas/WithValueSetRule'
+              - $ref: '#/components/schemas/NotRule'
+              - $ref: '#/components/schemas/AndRule'
+              - $ref: '#/components/schemas/OrRule'
+          description: 'These rules determine if this fee is applyable'
+        waivingRules:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/WithCounterValue'
+              - $ref: '#/components/schemas/WithValueSetRule'
+              - $ref: '#/components/schemas/NotRule'
+              - $ref: '#/components/schemas/AndRule'
+              - $ref: '#/components/schemas/OrRule'
+          description: 'These rules determine if this fee can be waived'
+    WithCounterValue:
+      type: object
+      required:
+        - objectType
+        - counterName
+      properties:
+        objectType:
+          type: string
+          example: WithCounterValue
+        counterName:
+          type: string
+          description: 'Possible Names: numOperationInMonth, totTopUpInMonth, ...'
+          example: numOperation
+        counterMin:
+          type: string
+          description: 'Minimum value to return true'
+          example: numOperation
+        counterMax:
+          type: string
+          description: 'Maximum value to return true'
+          example: numOperation
+    WithValueSetRule:
+      type: object
+      required:
+        - objectType
+        - propertyName
+        - propertyValues
+      properties:
+        objectType:
+          type: string
+          example: WithValueSetRule
+        propertyName:
+          type: string
+          description: The property name to verify with this rule
+          example: mcc
+        propertyValues:
+          type: string
+          description: The admissible values of the property
+          example: Cat001, Cat002
+    NotRule:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/WithCounterValue'
+        - $ref: '#/components/schemas/WithValueSetRule'
+        - $ref: '#/components/schemas/NotRule'
+        - $ref: '#/components/schemas/AndRule'
+        - $ref: '#/components/schemas/OrRule'
+      required:
+        - objectType
+      properties:
+        objectType:
+          type: string
+          example: NotRule
+    AndRule:
+      type: object
+      required:
+        - objectType
+      properties:
+        objectType:
+          type: string
+          example: AndRule
+        subRules:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/WithCounterValue'
+              - $ref: '#/components/schemas/WithValueSetRule'
+              - $ref: '#/components/schemas/NotRule'
+              - $ref: '#/components/schemas/AndRule'
+              - $ref: '#/components/schemas/OrRule'
+    OrRule:
+      type: object
+      required:
+        - objectType
+      properties:
+        objectType:
+          type: string
+          example: OrdRule
+        subRules:
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/WithCounterValue'
+              - $ref: '#/components/schemas/WithValueSetRule'
+              - $ref: '#/components/schemas/NotRule'
+              - $ref: '#/components/schemas/AndRule'
+              - $ref: '#/components/schemas/OrRule'
+    FeeResult:
+      title: FeeResult
+      type: object
+      properties:
+        operation:
+          type: string
+          example: TopUp
+        value:
+          type: string
+          example: "1.01"
+        type:
+          type: string
+          description: The currency or %
+          example: EUR
+      description: Provides informations for a Fee
